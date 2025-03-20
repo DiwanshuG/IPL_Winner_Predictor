@@ -3,19 +3,13 @@ import pickle
 import pandas as pd
 import webbrowser
 
-# Load Model
 try:
     with open('pipe.pkl', 'rb') as model_file:
         pipe = pickle.load(model_file)
 except FileNotFoundError:
-    st.error("🚨 Error: 'pipe.pkl' not found! Please upload the model file.")
-    uploaded_file = st.file_uploader("Upload 'pipe.pkl'", type=["pkl"])
-    if uploaded_file is not None:
-        pipe = pickle.load(uploaded_file)
-    else:
-        st.stop()
+    st.error("🚨 Error: 'pipe.pkl' not found! Please ensure the model file is in the correct location.")
+    st.stop()
 
-# Teams and Cities Data
 teams = [
     "Sunrisers Hyderabad", "Mumbai Indians", "Royal Challengers Bangalore", 
     "Kolkata Knight Riders", "Punjab Kings", "Chennai Super Kings", 
@@ -28,14 +22,12 @@ cities = [
     'Guwahati', 'Lucknow', 'Mullanpur'
 ]
 
-# UI Design
-st.set_page_config(page_title="IPL Win Predictor", layout="wide")
+
 st.markdown("<h1 style='text-align: center; color: #FF5733;'>🏏 IPL Win Predictor</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; font-size:18px;'>Predict the winning probability of an IPL team based on match conditions!</p>", unsafe_allow_html=True)
-st.markdown("---")
 
-# Team Selection
-col1, col2 = st.columns(2)
+st.markdown("---")
+col1, col2 = st.columns([1, 1])
 with col1:
     batting_team = st.selectbox("🏏 **Select the Batting Team**", sorted(teams))
 with col2:
@@ -45,14 +37,13 @@ if batting_team == bowling_team:
     st.error("🚨 Wrong team selection! The batting and bowling teams cannot be the same.")
     st.stop()
 
-# Venue and Target Score
 selected_city = st.selectbox("📍 **Select Match Venue**", sorted(cities))
-target = st.number_input("🎯 **Enter the Target Score**", min_value=1, step=1)
-st.markdown("---")
 
-# Match Progress Input
+target = st.number_input("🎯 **Enter the Target Score**", min_value=1, step=1)
+
+st.markdown("---")
 st.subheader("📊 Match Progress")
-col3, col4, col5 = st.columns(3)
+col3, col4, col5 = st.columns([1, 1, 1])
 with col3:
     score = st.number_input("🏏 **Current Score**", min_value=0, step=1)
 with col4:
@@ -60,29 +51,46 @@ with col4:
 with col5:
     wickets = st.number_input("❌ **Wickets Fallen**", min_value=0, max_value=10, step=1)
 
-# Adjust overs function
 def adjust_overs(overs):
     full_overs = int(overs)
     balls = round((overs - full_overs) * 10)
-    balls = min(balls, 5)  # Ensure max of 5 balls
-    return full_overs + balls / 10.0
+    
+    if balls > 5:
+        balls = 5  
+    
+    adjusted_overs = full_overs + balls / 10.0
+    
+    if adjusted_overs > 20.0:
+        adjusted_overs = 20.0  
+    
+    return adjusted_overs
 
 overse = adjust_overs(overs)
-balls_left = max(120 - (int(overs) * 6 + round((overs - int(overs)) * 10)), 0)
+over_full = int(overs)
+over_balls = round((overs - over_full) * 10)
+if over_balls > 5:
+    over_balls = 5
 
-# Prediction Button
+balls_left = 120 - (over_full * 6 + over_balls)
+
 if st.button("🔮 **Predict Probability**"):
     if overs == 0:
         st.warning("⚠️ Overs cannot be zero! Please enter a valid number of overs.")
-    elif wickets == 10 or balls_left == 0:
-        st.success(f"✅ {bowling_team} has won the match! No balls left or all wickets fallen.")
+    elif wickets == 10:
+        st.success(f"✅ {bowling_team} has won the match! All wickets have fallen.")
     elif score >= target:
         st.success(f"✅ {batting_team} has won the match! Target achieved.")
+    elif score == target - 1 and balls_left == 0:
+        st.success("🏏 It is a draw! Enjoy the Super Over!")
+    elif balls_left == 0 and score < target:
+        st.success(f"✅ {bowling_team} has won the match! No balls Left.")
     else:
         runs_left = target - score
         wickets_left = 10 - wickets
+
         crr = score / overs if overs > 0 else 0
         rrr = (runs_left * 6) / balls_left if balls_left > 0 else 0
+
         input_df = pd.DataFrame({
             'batting_team': [batting_team],
             'bowling_team': [bowling_team],
@@ -94,34 +102,44 @@ if st.button("🔮 **Predict Probability**"):
             'crr': [crr],
             'rrr': [rrr]
         })
+
         result = pipe.predict_proba(input_df)
-        win_prob, loss_prob = result[0][1], result[0][0]
+        loss_prob = result[0][0]
+        win_prob = result[0][1]
+
         st.markdown("---")
         st.subheader("📊 **Winning Probability**")
-        col6, col7 = st.columns(2)
+
+        col6, col7 = st.columns([1, 1])
         with col6:
             st.metric(label=f"✅ {batting_team} Win Probability", value=f"{round(win_prob * 100, 2)}%")
         with col7:
             st.metric(label=f"❌ {bowling_team} Win Probability", value=f"{round(loss_prob * 100, 2)}%")
+
         st.progress(win_prob)
 
-# Live Score Search
 if st.button("📺 Watch Live Score"):
-    search_url = f"https://www.google.com/search?q=Live+score+{batting_team}+vs+{bowling_team}"
-    webbrowser.open(search_url)
+    search_query = f"Live score {batting_team} vs {bowling_team}"
+    search_url = f"https://www.google.com/search?q={search_query.replace(' ', '+')}"
+    st.markdown(f"[📺 Click here to Watch Live Score]({search_url})", unsafe_allow_html=True)
 
-# Download IPL Schedule
 with open("sc.pdf", "rb") as file:
-    st.download_button(label="📄 Download IPL 2025 Schedule", data=file, file_name="IPL_2025_Schedule.pdf", mime="application/pdf")
+    st.download_button(
+        label="📄 Download IPL 2025 Schedule",
+        data=file,
+        file_name="sc.pdf",
+        mime="application/pdf"
+    )
 
-# Footer
 st.markdown("""
     <hr>
     <p style='text-align: center; font-size:16px;'>Created by <b>Diwanshu</b> with ❤️</p>
     <p style='text-align: center;'>
         <a href='https://www.linkedin.com/in/diwanshu-gangwar/' target='_blank' 
-        style='text-decoration: none; font-size:16px; color: #0077b5; font-weight: bold;'>
-            Connect with me on LinkedIn
+        style='text-decoration: none; font-size:16px; color: #0077b5; font-weight: bold; display: inline-flex; align-items: center;'>
+            <img src='https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png' 
+            width='20px' style='vertical-align: middle; margin-right: 5px;' />
+            Connect with me
         </a>
     </p>
-""", unsafe_allow_html=True)
+""", unsafe_allow_html=True) 
