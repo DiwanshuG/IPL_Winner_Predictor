@@ -56,34 +56,27 @@ col3, col4, col5 = st.columns([1, 1, 1])
 with col3:
     score = st.number_input("🏏 **Current Score**", min_value=0, step=1)
 with col4:
-    overs = st.number_input("⏳ **Overs Completed**", min_value=0.0, max_value=19.6, step=0.1, format="%.1f")
+    overs = st.number_input("⏳ **Overs Completed**", min_value=0.0, max_value=20.0, step=0.1, format="%.1f")
 with col5:
     wickets = st.number_input("❌ **Wickets Fallen**", min_value=0, max_value=10, step=1)
 
 # Ensure overs input follows the correct format
-def adjust_overs(overs):
+def validate_overs(overs):
     full_overs = int(overs)
     balls = round((overs - full_overs) * 10)
     
     if balls > 5:
-        full_overs += 1
-        balls = 0
+        st.error("🚨 Invalid input! The decimal value must not exceed 5 (e.g., 8.5 is valid, 8.6 is not).")
+        st.stop()
     
-    adjusted_overs = full_overs + balls / 10.0
+    if overs > 19.5:
+        return 20.0  # Cap at 20 overs
     
-    if adjusted_overs > 19.6:
-        adjusted_overs = 19.6  # Cap at 19.6 which represents 20 overs
-    
-    return adjusted_overs
+    return full_overs + balls / 10.0
 
-overs = adjust_overs(overs)
-over_full = int(overs)
-over_balls = round((overs - over_full) * 10)
-if over_balls > 5:
-    over_full += 1
-    over_balls = 0
+overs = validate_overs(overs)
 
-balls_left = 120 - (over_full * 6 + over_balls)
+balls_left = 120 - (int(overs) * 6 + round((overs - int(overs)) * 10))
 
 # Prediction Button
 if st.button("🔮 **Predict Probability**"):
@@ -93,7 +86,7 @@ if st.button("🔮 **Predict Probability**"):
         st.warning("⚠️ Score cannot be greater than the target!")
     elif wickets == 10:
         st.success(f"✅ {bowling_team} has won the match! All wickets have fallen.")
-    elif score == target and overs == 19.6:
+    elif score == target and overs == 20.0:
         st.success("🏏 It is a draw! Enjoy the Super Over!")
     elif score == target:
         st.success(f"✅ {batting_team} has won the match! Target achieved.")
