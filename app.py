@@ -56,9 +56,21 @@ col3, col4, col5 = st.columns([1, 1, 1])
 with col3:
     score = st.number_input("🏏 **Current Score**", min_value=0, step=1)
 with col4:
-    overs = st.number_input("⏳ **Overs Completed**", min_value=0.0, max_value=19.60, step=0.1)
+    overs = st.number_input("⏳ **Overs Completed**", min_value=0.0, max_value=19.5, step=0.1, format="%.1f")
 with col5:
     wickets = st.number_input("❌ **Wickets Fallen**", min_value=0, max_value=10, step=1)
+
+# Ensure overs input follows the correct format
+def adjust_overs(overs):
+    full_overs = int(overs)
+    balls = round((overs - full_overs) * 10)
+    if balls == 6:
+        full_overs += 1
+        balls = 0
+    return full_overs, balls
+
+over_full, over_balls = adjust_overs(overs)
+balls_left = 120 - (over_full * 6 + over_balls)
 
 # Prediction Button
 if st.button("🔮 **Predict Probability**"):
@@ -72,7 +84,6 @@ if st.button("🔮 **Predict Probability**"):
         st.success(f"✅ {batting_team} has won the match! Target achieved.")
     else:
         runs_left = target - score
-        balls_left = 120 - int(overs * 6)
         wickets_left = 10 - wickets
 
         # Avoid division by zero errors
