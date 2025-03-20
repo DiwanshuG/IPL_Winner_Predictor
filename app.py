@@ -89,7 +89,7 @@ balls_left = 120 - (over_full * 6 + over_balls)
 if st.button("🔮 **Predict Probability**"):
     if overs == 0:
         st.warning("⚠️ Overs cannot be zero! Please enter a valid number of overs.")
-    elif overs == (19.6 or 20) and score < target:
+    elif overs == (19.6 or 20) and score < target-2:
        st.success(f"✅ {bowling_team} has won the match! No balls Left.")
     elif wickets == 10:
         st.success(f"✅ {bowling_team} has won the match! All wickets have fallen.")
