@@ -69,13 +69,21 @@ def adjust_overs(overs):
         full_overs += 1
         balls = 0
     
-    if full_overs == 20:
-        return 19, 6  # 19.6 represents 20 overs
+    adjusted_overs = full_overs + balls / 10.0
     
-    return full_overs, balls
+    if adjusted_overs > 19.6:
+        adjusted_overs = 19.6  # Cap at 19.6 which represents 20 overs
+    
+    return adjusted_overs
 
-over_full, over_balls = adjust_overs(overs)
-balls_left = 120 - (over_full * 6 + min(over_balls, 6))
+overs = adjust_overs(overs)
+over_full = int(overs)
+over_balls = round((overs - over_full) * 10)
+if over_balls > 5:
+    over_full += 1
+    over_balls = 0
+
+balls_left = 120 - (over_full * 6 + over_balls)
 
 # Prediction Button
 if st.button("🔮 **Predict Probability**"):
@@ -85,7 +93,7 @@ if st.button("🔮 **Predict Probability**"):
         st.warning("⚠️ Score cannot be greater than the target!")
     elif wickets == 10:
         st.success(f"✅ {bowling_team} has won the match! All wickets have fallen.")
-    elif score == target and over_full == 19 and over_balls == 6:
+    elif score == target and overs == 19.6:
         st.success("🏏 It is a draw! Enjoy the Super Over!")
     elif score == target:
         st.success(f"✅ {batting_team} has won the match! Target achieved.")
