@@ -110,8 +110,8 @@ if st.button("🔮 **Predict Probability**"):
 # Watch Live Score Button
 if st.button("📺 Watch Live Score"):
     search_query = f"Live score {batting_team} vs {bowling_team}"
-    search_url = f"https://www.google.com/search?q={search_query.replace(' ', '+')}"
-    webbrowser.open(search_url)
+search_url = f"https://www.google.com/search?q={search_query.replace(' ', '+')}"
+st.markdown(f"[📺 Watch Live Score]({search_url})", unsafe_allow_html=True)
 
 # Download IPL 2025 Schedule
 with open("sc.pdf", "rb") as file:
