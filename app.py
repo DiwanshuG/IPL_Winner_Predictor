@@ -25,7 +25,8 @@ teams = [
 cities = [
     'Hyderabad', 'Bengaluru', 'Mumbai', 'Kolkata', 'Delhi',
     'Jaipur', 'Chennai', 'Ahmedabad', 'Dharamsala', 'Visakhapatnam',
-    'Guwahati', 'Lucknow', 'Mullanpur', 'Chandigarh', 'Pune', 'Raipur', 'Ranchi', 'Indore', 'Cuttack', 'Nagpur', 'Mohali'
+    'Guwahati', 'Chandigarh', 'Pune', 'Raipur', 'Ranchi', 'Indore',
+    'Cuttack', 'Nagpur', 'Mohali'
 ]
 
 # UI Design
