@@ -3,37 +3,39 @@ import pickle
 import pandas as pd
 import webbrowser
 
-# Load the trained model
+# Load Model
 try:
     with open('pipe.pkl', 'rb') as model_file:
         pipe = pickle.load(model_file)
 except FileNotFoundError:
-    st.error("🚨 Error: 'pipe.pkl' not found! Please ensure the model file is in the correct location.")
-    st.stop()
+    st.error("🚨 Error: 'pipe.pkl' not found! Please upload the model file.")
+    uploaded_file = st.file_uploader("Upload 'pipe.pkl'", type=["pkl"])
+    if uploaded_file is not None:
+        pipe = pickle.load(uploaded_file)
+    else:
+        st.stop()
 
-# IPL Teams
+# Teams and Cities Data
 teams = [
     "Sunrisers Hyderabad", "Mumbai Indians", "Royal Challengers Bangalore", 
     "Kolkata Knight Riders", "Punjab Kings", "Chennai Super Kings", 
     "Rajasthan Royals", "Delhi Capitals"
 ]
 
-# IPL Host Cities
 cities = [
-    'Hyderabad', 'Bengaluru', 'Mumbai', 'Indore', 'Kolkata', 'Delhi',
-    'Chandigarh', 'Jaipur', 'Chennai', 'Cape Town', 'Port Elizabeth',
-    'Durban', 'Centurion', 'East London', 'Johannesburg', 'Kimberley',
-    'Bloemfontein', 'Ahmedabad', 'Cuttack', 'Nagpur', 'Dharamsala',
-    'Visakhapatnam', 'Pune', 'Raipur', 'Ranchi', 'Abu Dhabi',
-    'Sharjah', 'Mohali'
+    'Hyderabad', 'Bengaluru', 'Mumbai', 'Kolkata', 'Delhi',
+    'Jaipur', 'Chennai', 'Ahmedabad', 'Dharamsala', 'Visakhapatnam',
+    'Guwahati', 'Lucknow', 'Mullanpur'
 ]
 
+# UI Design
+st.set_page_config(page_title="IPL Win Predictor", layout="wide")
 st.markdown("<h1 style='text-align: center; color: #FF5733;'>🏏 IPL Win Predictor</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; font-size:18px;'>Predict the winning probability of an IPL team based on match conditions!</p>", unsafe_allow_html=True)
+st.markdown("---")
 
 # Team Selection
-st.markdown("---")
-col1, col2 = st.columns([1, 1])
+col1, col2 = st.columns(2)
 with col1:
     batting_team = st.selectbox("🏏 **Select the Batting Team**", sorted(teams))
 with col2:
@@ -43,68 +45,44 @@ if batting_team == bowling_team:
     st.error("🚨 Wrong team selection! The batting and bowling teams cannot be the same.")
     st.stop()
 
-# Select Match Venue
+# Venue and Target Score
 selected_city = st.selectbox("📍 **Select Match Venue**", sorted(cities))
-
-# Input Target Score
 target = st.number_input("🎯 **Enter the Target Score**", min_value=1, step=1)
-
-# Match Progress Inputs
 st.markdown("---")
+
+# Match Progress Input
 st.subheader("📊 Match Progress")
-col3, col4, col5 = st.columns([1, 1, 1])
+col3, col4, col5 = st.columns(3)
 with col3:
     score = st.number_input("🏏 **Current Score**", min_value=0, step=1)
 with col4:
-    overs = st.number_input("⏳ **Overs Completed**", min_value=0.0, max_value=19.6, step=0.1, format="%.1f")
+    overs = st.number_input("⏳ **Overs Completed**", min_value=0.0, max_value=20.0, step=0.1, format="%.1f")
 with col5:
     wickets = st.number_input("❌ **Wickets Fallen**", min_value=0, max_value=10, step=1)
 
-# Ensure overs input follows the correct format
+# Adjust overs function
 def adjust_overs(overs):
     full_overs = int(overs)
     balls = round((overs - full_overs) * 10)
-    
-    if balls > 5:
-        full_overs += 1
-        balls = 0
-    
-    adjusted_overs = full_overs + balls / 10.0
-    
-    if adjusted_overs > 19.6:
-        adjusted_overs = 19.6  # Cap at 19.6 which represents 20 overs
-    
-    return adjusted_overs
+    balls = min(balls, 5)  # Ensure max of 5 balls
+    return full_overs + balls / 10.0
 
-overs = adjust_overs(overs)
-over_full = int(overs)
-over_balls = round((overs - over_full) * 10)
-if over_balls > 5:
-    over_full += 1
-    over_balls = 0
-
-balls_left = 120 - (over_full * 6 + over_balls)
+overse = adjust_overs(overs)
+balls_left = max(120 - (int(overs) * 6 + round((overs - int(overs)) * 10)), 0)
 
 # Prediction Button
 if st.button("🔮 **Predict Probability**"):
     if overs == 0:
         st.warning("⚠️ Overs cannot be zero! Please enter a valid number of overs.")
-    elif wickets == 10:
-        st.success(f"✅ {bowling_team} has won the match! All wickets have fallen.")
+    elif wickets == 10 or balls_left == 0:
+        st.success(f"✅ {bowling_team} has won the match! No balls left or all wickets fallen.")
     elif score >= target:
         st.success(f"✅ {batting_team} has won the match! Target achieved.")
-    elif score == target - 1 and (overs >= 19.6 or balls_left == 0):
-        st.success("🏏 It is a draw! Enjoy the Super Over!")
-    elif balls_left == 0:
-        st.success(f"✅ {bowling_team} has won the match! No balls Left.")
     else:
         runs_left = target - score
         wickets_left = 10 - wickets
-
-        # Avoid division by zero errors
         crr = score / overs if overs > 0 else 0
         rrr = (runs_left * 6) / balls_left if balls_left > 0 else 0
-
         input_df = pd.DataFrame({
             'batting_team': [batting_team],
             'bowling_team': [bowling_team],
@@ -116,39 +94,25 @@ if st.button("🔮 **Predict Probability**"):
             'crr': [crr],
             'rrr': [rrr]
         })
-
-        # Get prediction probabilities
         result = pipe.predict_proba(input_df)
-        loss_prob = result[0][0]
-        win_prob = result[0][1]
-
-        # Display Results at the Top
+        win_prob, loss_prob = result[0][1], result[0][0]
         st.markdown("---")
         st.subheader("📊 **Winning Probability**")
-
-        col6, col7 = st.columns([1, 1])
+        col6, col7 = st.columns(2)
         with col6:
             st.metric(label=f"✅ {batting_team} Win Probability", value=f"{round(win_prob * 100, 2)}%")
         with col7:
             st.metric(label=f"❌ {bowling_team} Win Probability", value=f"{round(loss_prob * 100, 2)}%")
-
-        # Progress Bar Representation
         st.progress(win_prob)
 
-# Watch Live Score Button
+# Live Score Search
 if st.button("📺 Watch Live Score"):
-    search_query = f"Live score {batting_team} vs {bowling_team}"
-    search_url = f"https://www.google.com/search?q={search_query.replace(' ', '+')}"
-    st.markdown(f"[📺 Click here to Watch Live Score]({search_url})", unsafe_allow_html=True)
+    search_url = f"https://www.google.com/search?q=Live+score+{batting_team}+vs+{bowling_team}"
+    webbrowser.open(search_url)
 
-# Download IPL 2025 Schedule
+# Download IPL Schedule
 with open("sc.pdf", "rb") as file:
-    st.download_button(
-        label="📄 Download IPL 2025 Schedule",
-        data=file,
-        file_name="sc.pdf",
-        mime="application/pdf"
-    )
+    st.download_button(label="📄 Download IPL 2025 Schedule", data=file, file_name="IPL_2025_Schedule.pdf", mime="application/pdf")
 
 # Footer
 st.markdown("""
@@ -156,10 +120,8 @@ st.markdown("""
     <p style='text-align: center; font-size:16px;'>Created by <b>Diwanshu</b> with ❤️</p>
     <p style='text-align: center;'>
         <a href='https://www.linkedin.com/in/diwanshu-gangwar/' target='_blank' 
-        style='text-decoration: none; font-size:16px; color: #0077b5; font-weight: bold; display: inline-flex; align-items: center;'>
-            <img src='https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png' 
-            width='20px' style='vertical-align: middle; margin-right: 5px;' />
-            Connect with me
+        style='text-decoration: none; font-size:16px; color: #0077b5; font-weight: bold;'>
+            Connect with me on LinkedIn
         </a>
     </p>
 """, unsafe_allow_html=True)
