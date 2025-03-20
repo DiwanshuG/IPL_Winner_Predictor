@@ -19,7 +19,7 @@ teams = [
 cities = [
     'Hyderabad', 'Bengaluru', 'Mumbai', 'Kolkata', 'Delhi',
     'Jaipur', 'Chennai', 'Ahmedabad', 'Dharamsala', 'Visakhapatnam',
-    'Guwahati', 'Lucknow', 'Mullanpur'
+    'Guwahati'
 ]
 
 
