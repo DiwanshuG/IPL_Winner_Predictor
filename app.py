@@ -93,7 +93,7 @@ if st.button("🔮 **Predict Probability**"):
        st.success(f"✅ {bowling_team} has won the match! No balls Left.")
     elif wickets == 10:
         st.success(f"✅ {bowling_team} has won the match! All wickets have fallen.")
-    elif score == target - 1 and (overs == 19.6 or 20):
+    elif score == target - 1 and overs == 19.6:
         st.success("🏏 It is a draw! Enjoy the Super Over!")
     elif score >= target:
         st.success(f"✅ {batting_team} has won the match! Target achieved.")
