@@ -56,7 +56,7 @@ col3, col4, col5 = st.columns([1, 1, 1])
 with col3:
     score = st.number_input("🏏 **Current Score**", min_value=0, step=1)
 with col4:
-    overs = st.number_input("⏳ **Overs Completed**", min_value=0.0, max_value=19.5, step=0.1, format="%.1f")
+    overs = st.number_input("⏳ **Overs Completed**", min_value=0.0, max_value=19.6, step=0.1, format="%.1f")
 with col5:
     wickets = st.number_input("❌ **Wickets Fallen**", min_value=0, max_value=10, step=1)
 
@@ -64,9 +64,14 @@ with col5:
 def adjust_overs(overs):
     full_overs = int(overs)
     balls = round((overs - full_overs) * 10)
-    if balls == 6:
+    
+    if balls > 5:
         full_overs += 1
         balls = 0
+    
+    if full_overs == 20:
+        return 20, 0
+    
     return full_overs, balls
 
 over_full, over_balls = adjust_overs(overs)
@@ -80,6 +85,8 @@ if st.button("🔮 **Predict Probability**"):
         st.warning("⚠️ Score cannot be greater than the target!")
     elif wickets == 10:
         st.success(f"✅ {bowling_team} has won the match! All wickets have fallen.")
+    elif score == target and over_full == 20:
+        st.success("🏏 It is a draw! Enjoy the Super Over!")
     elif score == target:
         st.success(f"✅ {batting_team} has won the match! Target achieved.")
     else:
