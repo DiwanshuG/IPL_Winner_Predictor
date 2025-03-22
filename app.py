@@ -128,7 +128,7 @@ st.markdown("""
     <p style='text-align: center;'>
         <a href='https://www.linkedin.com/in/diwanshu-gangwar/' target='_blank' 
         style='text-decoration: none; font-size:16px; color: #0077b5; font-weight: bold;'>
-            Connect with me on LinkedIn
+            Connect with me 
         </a>
     </p>
 """, unsafe_allow_html=True)
