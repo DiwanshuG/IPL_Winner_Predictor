@@ -113,9 +113,9 @@ if st.button("🔮 **Predict Probability**"):
         st.progress(win_prob)
 
 # Live Score Search
-if st.button("📺 Watch Live Score"):
-    search_url = f"https://www.google.com/search?q=Live+score+{batting_team}+vs+{bowling_team}"
-    webbrowser.open(search_url)
+search_url = f"https://www.google.com/search?q=Live+score+{batting_team}+vs+{bowling_team}"
+st.link_button("📺 Watch Live Score", search_url)
+
 
 # Download IPL Schedule
 with open("sc.pdf", "rb") as file:
