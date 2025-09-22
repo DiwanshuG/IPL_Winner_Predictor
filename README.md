@@ -35,6 +35,10 @@ Enter match details (teams, venue, score, overs, wickets) and get real-time win 
 - **XGBoost** (if used in model pipeline)  
 
 ---
+## 👨‍💻 Author & Connect
+Created by **Diwanshu** with ❤️  
+
+[LinkedIn](https://www.linkedin.com/in/diwanshu-gangwar/)
 
 ## 🚀 Run Locally
 
