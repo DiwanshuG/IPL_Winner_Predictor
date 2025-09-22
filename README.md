@@ -1,16 +1,16 @@
-# 🏏 IPL Win Predictor
+#  IPL Win Predictor
 
 A Machine Learning powered web app built with **Streamlit** to predict the winning probability of IPL teams based on match conditions.  
 Enter match details (teams, venue, score, overs, wickets) and get real-time win probabilities with a clean, interactive UI.  
 
 ---
 
-## 🌐 Live Demo
+##  Live Demo
 👉 [Click Here to Try the App](https://ipl-win-predictor-2025.streamlit.app/))  
 
 ---
 
-## ✨ Features
+## Features
 - Predicts **win probability** of the batting team in real-time  
 - Inputs:
   - Batting team & Bowling team  
@@ -35,7 +35,7 @@ Enter match details (teams, venue, score, overs, wickets) and get real-time win 
 - **XGBoost** (if used in model pipeline)  
 
 ---
-## 👨‍💻 Author & Connect
+##  Author & Connect
 Created by **Diwanshu** with ❤️  
 
 [LinkedIn](https://www.linkedin.com/in/diwanshu-gangwar/)
