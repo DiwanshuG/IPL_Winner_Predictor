@@ -1,48 +1,72 @@
-#  IPL Win Predictor
+# IPL Win Predictor
 
-A Machine Learning powered web app built with **Streamlit** to predict the winning probability of IPL teams based on match conditions.  
-Enter match details (teams, venue, score, overs, wickets) and get real-time win probabilities with a clean, interactive UI.  
+A machine learning–based web application that predicts the winning probability of IPL teams based on real-time match conditions such as score, overs, wickets, venue, and teams.
 
----
-
-##  Live Demo
-👉 [Click Here to Try the App](https://ipl-win-predictor-2025.streamlit.app/))  
+The project demonstrates an end-to-end ML workflow including data preprocessing, feature encoding, model training, evaluation, and deployment using Streamlit.
 
 ---
 
-## Features
-- Predicts **win probability** of the batting team in real-time  
+## 🔗 Live Demo
+👉 https://ipl-win-predictor-2025.streamlit.app/
+
+---
+
+## 📌 Problem Statement
+Predict the probability of a batting team winning an IPL match given the current match situation.  
+This helps analyze how match factors like score, wickets, and overs influence match outcomes.
+
+---
+
+## 📊 Dataset
+- Historical IPL match data
+- Includes team names, venue, target score, current score, overs, and wickets
+- Categorical and numerical features required preprocessing
+
+---
+
+## ⚙️ Approach
+- Cleaned and prepared match-level data using Pandas
+- Encoded categorical features (teams, venue) using One-Hot Encoding
+- Built an ML pipeline using Scikit-learn to combine preprocessing and modeling
+- Trained a Logistic Regression model to estimate win probability
+- Evaluated model performance using train-test split
+- Saved the trained model using Pickle for deployment
+
+---
+
+## ✨ Features
+- Real-time win probability prediction
 - Inputs:
-  - Batting team & Bowling team  
-  - Match venue  
-  - Target score, current score, overs, wickets  
-- Displays:
-  - Winning probabilities with **metrics** and **progress bar**  
-  - Handles match-end scenarios (all out, no balls left, draw, etc.)  
-- Quick **Live Score search** link  
-- Downloadable **IPL 2025 Schedule (PDF)**  
-- Responsive & modern UI built with Streamlit  
+  - Batting & bowling teams
+  - Match venue
+  - Target score, current score, overs, wickets
+- Handles match-end edge cases (all out, overs completed, etc.)
+- Interactive UI with metrics and progress visualization
+- Deployed using Streamlit
 
 ---
 
 ## 🛠 Tech Stack
-- **Python 3.9+**  
-- **Streamlit** (Frontend + Deployment)  
-- **Pandas** (Data processing)  
-- **Scikit-learn** (Model training)  
-- **Pickle** (Model storage)  
-- **Matplotlib & Seaborn** (Data visualization, optional)  
-- **XGBoost** (if used in model pipeline)  
+- Python  
+- Pandas, NumPy  
+- Scikit-learn  
+- Streamlit  
+- Pickle  
+- Matplotlib, Seaborn  
 
 ---
-##  Author & Connect
-Created by **Diwanshu** with ❤️  
 
-[LinkedIn](https://www.linkedin.com/in/diwanshu-gangwar/)
+## 📈 Learnings
+- End-to-end machine learning workflow on real-world tabular data
+- Handling categorical variables using pipelines
+- Importance of proper preprocessing in ML models
+- Deploying ML models as interactive web applications
+
+---
 
 ## 🚀 Run Locally
-
-1. **Clone the project**
 ```bash
-git clone https://github.com/mrtaiech/IPL-Win-Predictor.git
+git clone https://github.com/your-username/IPL-Win-Predictor.git
 cd IPL-Win-Predictor
+pip install -r requirements.txt
+streamlit run app.py
