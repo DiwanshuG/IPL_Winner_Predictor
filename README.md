@@ -6,25 +6,25 @@ The project demonstrates an end-to-end ML workflow including data preprocessing,
 
 ---
 
-## 🔗 Live Demo
+##  Live Demo
 👉 https://ipl-win-predictor-2025.streamlit.app/
 
 ---
 
-## 📌 Problem Statement
+##  Problem Statement
 Predict the probability of a batting team winning an IPL match given the current match situation.  
 This helps analyze how match factors like score, wickets, and overs influence match outcomes.
 
 ---
 
-## 📊 Dataset
-- Historical IPL match data
+##  Dataset
+- Historical IPL match data [2008-2024]
 - Includes team names, venue, target score, current score, overs, and wickets
 - Categorical and numerical features required preprocessing
 
 ---
 
-## ⚙️ Approach
+##  Approach
 - Cleaned and prepared match-level data using Pandas
 - Encoded categorical features (teams, venue) using One-Hot Encoding
 - Built an ML pipeline using Scikit-learn to combine preprocessing and modeling
@@ -34,7 +34,7 @@ This helps analyze how match factors like score, wickets, and overs influence ma
 
 ---
 
-## ✨ Features
+##  Features
 - Real-time win probability prediction
 - Inputs:
   - Batting & bowling teams
@@ -46,7 +46,7 @@ This helps analyze how match factors like score, wickets, and overs influence ma
 
 ---
 
-## 🛠 Tech Stack
+##  Tech Stack
 - Python  
 - Pandas, NumPy  
 - Scikit-learn  
@@ -56,7 +56,7 @@ This helps analyze how match factors like score, wickets, and overs influence ma
 
 ---
 
-## 📈 Learnings
+## Learnings
 - End-to-end machine learning workflow on real-world tabular data
 - Handling categorical variables using pipelines
 - Importance of proper preprocessing in ML models
@@ -64,9 +64,13 @@ This helps analyze how match factors like score, wickets, and overs influence ma
 
 ---
 
-## 🚀 Run Locally
+## Run Locally
 ```bash
 git clone https://github.com/your-username/IPL-Win-Predictor.git
 cd IPL-Win-Predictor
 pip install -r requirements.txt
 streamlit run app.py
+```
+
+## Author 
+### Diwanshu Gangwar [ LinkedIn: https://www.linkedin.com/in/diwanshu-gangwar/]
